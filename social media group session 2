@@ -1,0 +1,50 @@
+public class Account {
+    public static int AccountID = 0;
+    public int id;
+    int description;
+    int handle;
+    int accountCounter = 0;
+
+    public Account(String description, string handle) {
+        this.description = description;
+        this.handle = handle;
+        this.id = AccountID++;
+    }
+
+    public int getID() {
+        return id;
+
+    }
+
+    public string getDescription() {
+        return description;
+    }
+
+    public void setDescription(string description) {
+        this.description = description;
+    }
+
+    public string setHandle(int username) {
+        handle = username;
+    }
+
+    public void CreatePost(string handle, string description) {
+
+    }
+
+    public void commentPost(string handle, int AccounID, string message) {
+
+    }
+
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        Account myAccount = new Account("This is my personal account ", "@morgan");
+        System.out.println("My account id is " + myAccount.getId());
+        System.out.println("My account description is " + myAccount.getDescription());
+        System.out.println("My account handle is " + myAccount.getHandle());
+    }
+
+}
