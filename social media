@@ -1,0 +1,158 @@
+package socialmedia;
+
+import socialmedia.AccountIDNotRecognisedException;
+import socialmedia.BadSocialMedia;
+import socialmedia.IllegalHandleException;
+import socialmedia.InvalidHandleException;
+import socialmedia.SocialMediaPlatform;
+import socialmedia.Post.Endorsement;
+import java.util.HashMap;
+import java.io.*;
+
+import java.io.Serializable;
+
+import javax.xml.stream.events.Comment;
+
+import socialmedia.Account;
+import socialmedia.Post;
+
+/**
+ * socialmedia
+ */
+public class socialmedia implements Serializable, SocialMediaPlatform, MiniSocialMediaPlatform {
+    public static HashMap<Integer, Account> accounts = new HashMap<Integer, Account>();
+    // Account methods
+
+    public int createAccount(String handle, String description) throws IllegalHandleException, InvalidHandleException {
+        return Account.createAccount(handle, description);
+    }
+
+    public int createAccount(String handle) throws IllegalHandleException, InvalidHandleException {
+        return Account.createAccount(handle);
+    }
+
+    public void removeAccount(int id) throws AccountIDNotRecognisedException {
+        Account.removeAccount(id);
+    }
+
+    public void changeAccountHandle(String oldHandle, String newHandle) {
+        Account.changeAccountHandle(oldHandle, newHandle);
+    }
+
+    public String showAccount(String handle) {
+        Account.showAccount(handle);
+        return null;
+    }
+
+    public int getMostEndorsedAccount() {
+        System.out.println(Post.getMostEndorsedAccount());
+        return 0;
+    }
+
+    public void removeAccount(String handle) {
+        Account.removeAccount(handle);
+    }
+
+    public void updateAccountDescription(String handle, String description) {
+        Account.updateAccountDescription(handle, description);
+    }
+
+    public int getNumberOfAccounts() {
+        return Account.getNumberOfAccounts();
+    }
+
+    // Post methods
+
+    public int createPost(String handle, String message) throws InvalidPostException, HandleNotRecognisedException {
+        return Post.createPost(handle, message);
+    }
+
+    public String showIndividualPost(int id) throws PostIDNotRecognisedException {
+        System.out.println(Post.showIndividualPost(id));
+        return Post.showIndividualPost(id);
+    }
+
+    public void deletePost(int id) throws PostIDNotRecognisedException {
+        Post.deletePost(id);
+    }
+
+    // Still needs to be done
+    public int commentPost(String handle, int id, String message) {
+        return 0;
+    }
+
+    public int endorsePost(String handle, int id)
+            throws HandleNotRecognisedException, PostIDNotRecognisedException, NotActionablePostException {
+        return Endorsement.endorsePost(handle, id);
+    }
+
+    public StringBuilder showPostChildrenDetails(int id) {
+        StringBuilder builder = new StringBuilder();
+        // System.out.println(showIndividualPost(id));
+        return builder;
+
+    }
+
+    public int getMostEndorsedPost() {
+        return Post.getMostEndorsedPost();
+    }
+
+    public int getTotalOriginalPosts() {
+        System.out.println(Post.getTotalOriginalPosts());
+        return Post.getTotalOriginalPosts();
+    }
+
+    public int getTotalEndorsmentPosts() {
+        System.out.println(Post.getTotalEndorsementPosts());
+        return Post.getTotalEndorsementPosts();
+    }
+
+    public int getTotalCommentPosts() {
+        System.out.println(Post.getTotalCommentPosts());
+        return Post.getTotalCommentPosts();
+    }
+
+    // seriallisation
+    // bellow will be the seriallisation functions
+
+    public void loadPlatform(String filename) {
+        // insert de-seriallisation code her
+
+    }
+
+    public void savePlatform(String filename) {
+        // research how to use seriallisation here
+        // A demo to serialize Employee objects
+        HashMap<String, Account> accounts = new HashMap<>();
+        HashMap<Integer, Post> posts = new HashMap<>();
+
+        String fileName = "data.ser";
+
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
+            out.writeObject(accounts);
+            out.writeObject(posts);
+            System.out.printf("Saved in %s%n", fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void erasePlatform() {
+        accounts.clear();
+        Post.posts.clear();
+
+    }
+
+}
+
+/*
+ * public void erasePlatform() {
+ * // turn all counters back to 0 and reset
+ * accounts.clear();
+ * Post.posts.clear();
+ * Post.commentCount = 0;
+ * Post.postCount = 0;
+ * }
+ * }
+ * }
+ */
