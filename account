@@ -1,0 +1,207 @@
+package socialmedia;
+
+import java.io.Serializable;
+import java.util.HashMap;
+
+public class Account implements Serializable {
+
+    public String handle;
+    public String description;
+    public int id;
+    public static int nextid = 1;
+
+    // This creaates a static instance of a HashMap object called accounts, it maps
+    // strinsg to Account objects
+    public static HashMap<String, Account> accounts = new HashMap<String, Account>();
+
+    // This defines a constructor for the Account class that takes two string
+    // parameters handle and description
+    public Account(String handle, String description) {
+        this.handle = handle;
+        this.description = description;
+        // This increments the id making sure that each new account objet has unq
+        this.id = nextid;
+        nextid++;
+    }
+
+    public int getid() {
+        return id;
+    }
+
+    public int getNumberofAccounts() {
+        return id; // uses the id as a reference of how many accounts as id incremental per new
+                   // account made
+
+    }
+
+    void setHandle(final String handle) {
+        this.handle = handle;
+    }
+
+    public String getHandle() {
+        return handle;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    void setDescription(String description) {
+        this.description = description;
+
+    }
+
+    public static void removeAccount(String handle) {
+        // iterates through the collection of account objects in the accounts hashmap
+        for (Account account : accounts.values()) {
+            // Trys to find the handle that matches with the handle passed in by the
+            // parameter
+            if (account.getHandle().equals(handle)) {
+                accounts.remove(handle);
+                System.out.println("Account removed sucessfuly:");
+            } else {
+                System.out.println("Account not found!:");
+            }
+
+        }
+
+    }
+
+    public static void removeAccount(Integer id) throws AccountIDNotRecognisedException {
+        try {
+            boolean idFound = false;
+            // Does the same iteration as before to search through the accounts hashmap but
+            // this time witht the id specified in the parameter
+            for (Account account : accounts.values()) {
+                if (account.getid() == (id)) {
+                    // if the id is found it will be removed from the accounts hashmap
+                    accounts.remove(account.getHandle());
+                    // Remove the account using its handle as the key
+                    System.out.println("Account removed successfully.");
+                    idFound = true;
+                    break;
+                }
+            }
+            if (!idFound) {
+                throw new AccountIDNotRecognisedException("Account not found!");
+            }
+        } catch (AccountIDNotRecognisedException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public static int getNumberOfAccounts() {
+        // uses the inbuilt function ".size" to give the total number of accounts in the
+        // account hashmap and hence the whole platform
+        System.out.println("Number of Accounts: " + accounts.size());
+        return accounts.size();
+
+    }
+
+    public static void updateAccountDescription(String handle, String description) {
+        // The for loop iterates through each account object in the "accounts" HashMap:
+        for (Account account : accounts.values()) {
+            // If the handle of the current account matches one in parammeter
+            if (account.getHandle().equals(handle)) {
+                // description of current is updated with new passed in description
+                account.setDescription(description);
+                System.out.println("Description changed successfully.");
+                return;
+            }
+        }
+        System.out.println("Account not found!");
+    }
+
+    public static void changeAccountHandle(String oldHandle, String NewHandle) {
+        // Retrieves the account to change using the old handle provided as a parameter
+        Account accountToChange = accounts.get(oldHandle);
+
+        if (accountToChange == null) {
+            // If account does not exist in hashmap, it will show an error message
+            System.out.println("Account not found!");
+            return;
+        }
+        if (accounts.containsKey(NewHandle)) {
+            // If handle they want to change to is already in use it will throw up an error
+            // message
+            System.out.println("Handle already in use.");
+            return;
+        }
+        // First it will remove old handle from the hashmap of all of the account
+        // handles
+        accounts.remove(oldHandle);
+        // Sets to new handle
+        accountToChange.setHandle(NewHandle);
+        // This then adds the updated account object to the accounts HashMAp with sthe
+        // new handle as the key
+        accounts.put(NewHandle, accountToChange);
+        System.out.println("Handle changed successfully.");
+    }
+
+    public static void showAccount(String handle) {
+        try {
+            boolean handleFound = false;
+            if (accounts.containsKey(handle)) {
+                // The for loop iterates through each account object in the "accounts" HashMap
+                for (Account account : accounts.values()) {
+                    // Checks if the current handle is the same as the one that needs to be shown
+                    if (account.getHandle().equals(handle)) {
+                        System.out.println("Showing account details :\n");
+                        System.out.println("ID: " + account.getid());
+                        System.out.println("Handle: " + account.getHandle());
+                        System.out.println("Description: " + account.getDescription());
+                        // Links to a method that keeps count of the endorsements and posts that account
+                        // has made
+                        // Account.showAccountTotal(handle);
+                        handleFound = true;
+                        break;
+                    }
+                }
+            }
+            if (!handleFound) {
+                throw new HandleNotRecognisedException(
+                        "handle does not exist in the registered accounts list: " + handle);
+            }
+        } catch (HandleNotRecognisedException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public static int createAccount(String handle, String description)
+            throws IllegalHandleException, InvalidHandleException {
+        // Check if handle is empty
+
+        // Check if handle already exists
+        try {
+            if (accounts.containsKey(handle)) {
+                throw new IllegalHandleException("handle already exists: " + handle);
+            }
+            if (handle.isEmpty()) {
+                throw new InvalidHandleException("handle cannot be empty");
+            }
+            // if the handle is unique, create a new "Account" object with given handle and
+            // description
+            Account account = new Account(handle, description);
+            // Add the account to the "accounts" hashmap with the handle as the key
+            accounts.put(handle, account);
+            System.out.println("Account created successfully \n");
+            // Returns the ID of the new account
+            return account.getid();
+        } catch (IllegalHandleException e) {
+            System.out.println(e.getMessage());
+            return 0;
+        } catch (InvalidHandleException e) {
+            System.out.println(e.getMessage());
+            return 0;
+        }
+    }
+
+    public static int createAccount(String handle) {
+        // Does same as before however as there is no String being passed in for the
+        // description, it sets it as the default description which can later be changed
+        Account account = new Account(handle, "Default description");
+        accounts.put(handle, account);
+        return account.getid();
+    }
+
+}
