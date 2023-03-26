@@ -1,0 +1,133 @@
+import socialmedia.AccountIDNotRecognisedException;
+import socialmedia.BadSocialMedia;
+import socialmedia.HandleNotRecognisedException;
+import socialmedia.IllegalHandleException;
+import socialmedia.InvalidHandleException;
+import socialmedia.InvalidPostException;
+import socialmedia.NotActionablePostException;
+import socialmedia.Post;
+import socialmedia.PostIDNotRecognisedException;
+import socialmedia.SocialMediaPlatform;
+import socialmedia.socialmedia;
+import socialmedia.Account;
+
+import java.io.IOException;
+import java.lang.module.InvalidModuleDescriptorException;
+import java.util.HashMap;
+
+/**
+ * A short program to illustrate an app testing some minimal functionality of a
+ * concrete implementation of the SocialMediaPlatform interface -- note you will
+ * want to increase these checks, and run it on your SocialMedia class (not the
+ * BadSocialMedia class).
+ *
+ * 
+ * @author Diogo Pacheco
+ * @version 1.0
+ */
+public class SocialMediaPlatformTestApp {
+	public static HashMap<Integer, Account> accounts = new HashMap<>();
+
+	/**
+	 * Test method.
+	 * 
+	 * @param args not used
+	 */
+	public static void main(String[] args) {
+		System.out.println("The system compiled and started the execution...");
+
+		SocialMediaPlatform platform = new socialmedia();
+
+		assert (platform.getNumberOfAccounts() == 0) : "Innitial SocialMediaPlatform not empty as required.";
+		assert (platform.getTotalOriginalPosts() == 0) : "Innitial SocialMediaPlatform not empty as required.";
+		assert (platform.getTotalCommentPosts() == 0) : "Innitial SocialMediaPlatform not empty as required.";
+		assert (platform.getTotalEndorsmentPosts() == 0) : "Innitial SocialMediaPlatform not empty as required.";
+
+		Integer id, id2;
+		Integer PostID;
+		Integer PostID2, Postid3;
+		try {
+			// account Tests
+			System.out.println("Creating accounts:");
+
+			platform.createAccount("morgan", "adasd");
+			id = platform.createAccount("", "this is a description");
+			id2 = platform.createAccount("Andy", "Hello im andy");
+
+			System.out.println("Removing account:");
+			platform.removeAccount(id);
+
+			System.out.println("\nChanging account handle:");
+			platform.changeAccountHandle("morgan", "Bill");
+
+			System.out.println("\nShowing account with new handle:");
+			platform.showAccount("Bill");
+
+			System.out.println("\nShowing id of most endorsed account:");
+			platform.getMostEndorsedAccount();
+
+			System.out.println("\nupdating an accounts description:");
+			platform.updateAccountDescription("Andy", "new description");
+
+			// Post tests:
+
+			System.out.println("\n creating a post:");
+			PostID = platform.createPost("Andy", "sdffsdsdf");
+
+			// System.out.println("\n Displaying post");
+			// platform.showIndividualPost(PostID);
+
+			System.out.println("\n Deleting post:");
+			// platform.deletePost(PostID);
+
+			System.out.println("\nCommenting: ");
+			platform.commentPost("morgan", PostID, "my attempt at a comment");
+
+			System.out.println("\nEndorsing post:");
+			platform.endorsePost("morgan", PostID);
+
+			System.out.println("\nShowing post chrildren:");
+			platform.showPostChildrenDetails(PostID);
+
+			System.out.println("\nShowing id of most endorsed post");
+			platform.getMostEndorsedPost();
+
+			System.out.println("\n Showing total original posts");
+			platform.getTotalOriginalPosts();
+
+			System.out.println("\n Showing total amount of endorsements");
+			platform.getTotalEndorsmentPosts();
+
+			System.out.println("\n Showing total amount of comment posts");
+			platform.getTotalCommentPosts();
+
+			System.out.println("\n Showing id of accout with most endorsements");
+			platform.getMostEndorsedAccount();
+
+			// Saving,loading and deleting
+
+			System.out.println("\n Saving the platform:");
+			platform.savePlatform("Yoooo.txt");
+
+			assert (platform.getNumberOfAccounts() == 0) : "number of accounts registered in the system does not match";
+
+		} catch (IllegalHandleException e) {
+			assert (false) : "IllegalHandleException thrown incorrectly";
+		} catch (InvalidHandleException e) {
+			assert (false) : "InvalidHandleException thrown incorrectly";
+		} catch (AccountIDNotRecognisedException e) {
+			assert (false) : "AccountIDNotRecognizedException thrown incorrectly";
+		} catch (HandleNotRecognisedException e) {
+			assert (false) : "HandleNotRecognisedException thrown incorrectly";
+		} catch (InvalidPostException e) {
+			assert (false) : "invalid post esxception";
+		} catch (PostIDNotRecognisedException e) {
+			assert (false) : "PostIDNotRecognised exception thrown incorrectly";
+		} catch (IOException e) {
+			assert (false) : "IOException exception throw incorrectly";
+		} catch (NotActionablePostException e) {
+			assert (false) : "Not actionable post exception thrown incorrectly";
+		}
+
+	}
+}
