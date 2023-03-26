@@ -1,0 +1,323 @@
+package socialmedia;
+
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Map;
+import socialmedia.Account;
+
+public class Post {
+    private String handle; // the handle of the account that posted the message
+    private static String message; // the message content of the post
+    public static int id; // the ID of the post
+    public static int nextId; // the next available ID for the next post
+    public static HashMap<Integer, Post> posts = new HashMap<Integer, Post>(); // a HashMap to store all posts
+    public static int NumberofComments = 0; // the number of comments on all posts
+    public static int NumberofEndorsements = 0; // the number of endorsements on all posts
+    public static int NumberofPosts = 0; // the total number of posts
+    public static int NumberofEndorsementPosts = 0; // the total number of endorsement posts
+    public static int NumberofCommentPosts = 0; // the total number of comment posts
+    public static Map<Integer, ArrayList<Post>> CommentmultiMap = new HashMap<>(); // a HashMap to store all comments
+                                                                                   // for each post
+    public static ArrayList<Post> comments = new ArrayList<Post>(); // an ArrayList to store all comments
+    public static HashMap<Integer, Post> CommentMap = new HashMap<Integer, Post>(); // a HashMap to store all comment
+                                                                                    // posts
+    public static HashMap<Integer, Integer> EndorsementCountMap = new HashMap<Integer, Integer>(); // a HashMap to store
+                                                                                                   // the number of
+                                                                                                   // endorsements for
+                                                                                                   // each post
+    public static HashMap<Integer, Integer> CommentCountMap = new HashMap<Integer, Integer>(); // a HashMap to store the
+                                                                                               // number of comments for
+                                                                                               // each post
+
+    // constructor for creating a new post
+    public Post(String handle, String message) {
+        this.handle = handle;
+        this.message = message;
+        id = nextId; // assign the next available ID
+        nextId++; // increment the next available ID
+    }
+
+    public String getHandle() {
+        return handle;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public int getId() {
+
+        return id;
+    }
+
+    public static void resetIdCounter() {
+        nextId = 1; // reset the ID counter to 1
+    }
+
+    public static int getNextId() {
+        return nextId; // get the next available ID without incrementing
+    }
+
+    public static void showPost(int id) {
+        System.out.println(posts.get(id).getHandle());
+        System.out.println(posts.get(id).getMessage());
+
+    }
+
+    public static int getTotalOriginalPosts() {
+        return NumberofPosts;
+    }
+
+    public static int getTotalEndorsementPosts() {
+        return NumberofEndorsementPosts;
+    }
+
+    public static int getTotalCommentPosts() {
+        return NumberofCommentPosts;
+    }
+
+    public static void setNextId(int nextId) {
+        Post.nextId = nextId; // set the next available ID to a specific value
+    }
+
+    public static int createPost(String handle, String message)
+            throws InvalidPostException, HandleNotRecognisedException {
+        if (message.isEmpty() || message.length() > 100) {
+            throw new InvalidPostException("The message of your post is either empty or exceeds the characters limit");
+        }
+
+        if (!Account.accounts.containsKey(handle)) {
+            throw new HandleNotRecognisedException("The handle of the account does not exist in the system");
+        }
+
+        Post post = new Post(handle, message);
+        NumberofPosts++;
+        posts.put(nextId, post);
+        return post.getId();
+    }
+
+    public static void deletePost(int id) throws PostIDNotRecognisedException {
+        try {
+            if (!posts.containsKey(id)) {
+                throw new PostIDNotRecognisedException("Post ID not recognised: " + id);
+            }
+
+            Post post = new Post("", "The original content was removed from the system and is no longer available.");
+            posts.put(id, post);
+            EndorsementCountMap.put(id, 0);
+            CommentCountMap.put(id, 0);
+        } catch (PostIDNotRecognisedException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static int getMostEndorsedPost() {
+        int maxKey = 0;
+        int maxValue = Integer.MIN_VALUE;
+        for (HashMap.Entry<Integer, Integer> entry : EndorsementCountMap.entrySet()) {
+            int key = entry.getKey();
+            int value = entry.getValue();
+            if (value > maxValue) {
+                maxKey = key;
+                maxValue = value;
+            }
+        }
+        return maxKey;
+    }
+
+    public static int getMostEndorsedAccount() {
+        int maxKey = 0;
+        int maxValue = Integer.MIN_VALUE;
+        for (HashMap.Entry<Integer, Integer> entry : EndorsementCountMap.entrySet()) {
+            int key = entry.getKey();
+            int value = entry.getValue();
+            if (value > maxValue) {
+                maxKey = key;
+                maxValue = value;
+            }
+        }
+        return maxKey;
+    }
+
+    public static String showIndividualPost(int id) throws PostIDNotRecognisedException {
+
+        if (!posts.containsKey(id)) {
+            throw new PostIDNotRecognisedException("Post ID not recognised: " + id);
+        }
+
+        /*
+         * if (posts.get(id).getMessage().
+         * equals("The original content was removed from the system and is no longer available."
+         * )){
+         * throw new NotActionablePostException("This post cannot be acted upon");
+         * }
+         */
+
+        return "ID:" + " " + id + "\n" + "Account:" + " " + posts.get(id).getHandle() + "\n" + "No. endorsements: " +
+                EndorsementCountMap.get(id) + " | " +
+                "No. comments: " + (CommentCountMap.get(id)) + "\n" + posts.get(id).getMessage();
+
+    }
+
+    public static class Endorsement extends Post {
+        public Endorsement(String handle, int id) {
+            super(handle, posts.get(id).getMessage());
+        }
+
+        public static int endorsePost(String handle, int id)
+                throws HandleNotRecognisedException, PostIDNotRecognisedException, NotActionablePostException {
+
+            if (!posts.containsKey(id)) {
+                throw new PostIDNotRecognisedException("Post ID not recognised: " + id);
+            }
+
+            /*
+             * if (message.isEmpty() || message.length() > 100){
+             * throw new
+             * InvalidPostException("The message of your post is either empty or exceeds the characters limit"
+             * );
+             * }
+             * 
+             * 
+             * if (!Account.accounts.containsKey(handle)){
+             * throw new
+             * InvalidPostException("The message of your post is either empty or exceeds the characters limit"
+             * );
+             * }
+             */
+
+            if (posts.get(id).getMessage()
+                    .equals("The original content was removed from the system and is no longer available.")) {
+                throw new NotActionablePostException("This post cannot be acted upon");
+            }
+
+            String message = "EP@" + posts.get(id).getHandle() + ": " + posts.get(id).getMessage();
+            Post endorsement = new Post(handle, message);
+
+            NumberofEndorsementPosts++;
+            EndorsementCountHandler(id);
+            posts.put(nextId, endorsement);
+            return nextId - 1;
+
+        }
+
+        public static void EndorsementCountHandler(int id) {
+            if (EndorsementCountMap.get(id) == null) {
+                EndorsementCountMap.put(id, 0);
+            }
+            int endorsementcount = EndorsementCountMap.get(id);
+            endorsementcount++;
+            EndorsementCountMap.put(id, endorsementcount);
+
+        }
+    }
+
+    public static class Comment extends Post {
+        public Comment(String handle, int id) {
+            super(handle, posts.get(id).getMessage());
+        }
+
+        public static int commentPost(String handle, int id, String message) throws PostIDNotRecognisedException,
+                InvalidPostException, HandleNotRecognisedException, NotActionablePostException {
+            if (!posts.containsKey(id)) {
+                throw new PostIDNotRecognisedException("Post ID not recognised: " + id);
+            }
+            if (message.isEmpty() || message.length() > 100) {
+                throw new InvalidPostException("Invalid post message: " + message);
+            }
+
+            if (!Account.accounts.containsKey(handle)) {
+                throw new HandleNotRecognisedException(
+                        "The  account handle you have used does not exist in the system.");
+            }
+
+            Post comment = new Post(handle, message);
+            posts.put(nextId, comment);
+            NumberofComments++;
+            NumberofCommentPosts++;
+            CommentCountHandler(id);
+            comments.add(comment);
+            commentsHandler(id, comment);
+
+            return nextId - 1;
+
+        }
+
+        public static void CommentCountHandler(int id) {
+            if (CommentCountMap.get(id) == null) {
+                CommentCountMap.put(id, 0);
+            }
+            int commentcount = CommentCountMap.get(id);
+            commentcount++;
+            CommentCountMap.put(id, commentcount);
+        }
+
+        public static void commentsHandler(int id, Post comment) {
+            if (CommentmultiMap.get(id) == null) {
+                ArrayList<Post> EmptyList = new ArrayList<>();
+                CommentmultiMap.put(id, EmptyList);
+            }
+            ArrayList<Post> adder = CommentmultiMap.get(id);
+            adder.add(comment);
+
+        }
+
+        public static StringBuilder showPostChildrenDetails(int id)
+                throws PostIDNotRecognisedException, NotActionablePostException {
+            if (!posts.containsKey(id)) {
+                throw new PostIDNotRecognisedException("Post ID not recognised: " + id);
+            }
+
+            if (posts.get(id).getMessage()
+                    .equals("The original content was removed from the system and is no longer available.")) {
+                throw new NotActionablePostException("This post cannot be acted upon");
+            }
+
+            StringBuilder builder = new StringBuilder();
+            builder.append(showIndividualPost(id)).append("\n");
+            ArrayList<Post> replies = CommentmultiMap.get(id);
+            ArrayList<Integer> commentids = new ArrayList<Integer>();
+
+            for (int x = 1; x < posts.size(); x++) {
+                for (int z = 0; z < replies.size(); z++) {
+                    if (replies.get(z) == posts.get(x)) {
+                        commentids.add(x);
+
+                    }
+                }
+            }
+            if (commentids != null) {
+                for (int i = 0; i < commentids.size(); i++) {
+                    String individualPost = showIndividualPost(commentids.get(i));
+                    String[] postLines = individualPost.split("\n"); // split post into separate lines
+                    String indent = ""; // initialize indentation
+                    for (int j = 0; j < i + 1; j++) { // determine indentation based on depth of comment
+                        indent += "    "; // add 4 spaces per level
+                    }
+                    builder.append(indent).append("| >").append(postLines[0]).append("\n");
+                    for (int j = 1; j < postLines.length; j++) { // add remaining lines with indentation
+                        builder.append(indent).append("    ").append(postLines[j]).append("\n");
+                    }
+                }
+            }
+
+            return builder;
+        }
+
+        public static void main(String[] args) {
+            try {
+
+                Post.createPost("Adam", "This is post 1");
+
+            } catch (InvalidPostException e) {
+                e.printStackTrace();
+            } catch (HandleNotRecognisedException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println(Account.accounts);
+
+        }
+    }
+}
